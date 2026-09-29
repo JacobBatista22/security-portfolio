@@ -1,45 +1,73 @@
-# Dead Deploy Lab: Investigating Intern Audit Trail
+# Investigating Unauthorized Resource Group Deployment
 
 ## Scenario
-An intern with temporary Contributor access deployed a "test environment" over a weekend, cut every corner, and left. 
-I came in on Monday as the on-call engineer with Reader access and had to reconstruct what happened and why governance did not stop it. 
+A team member deployed an unapproved test environment over the weekend that bypassed organizational naming standards. I received a ticket on Monday to locate the rogue deployment, identify the creator, and establish the exact timeline using reader level permissions. This investigation determined how the deployment bypassed governance controls and answered why existing platform policies allowed the creation. 
 
 ## Environment
-Live multi-user Azure training tenant with Reader Level Access, Azure Policy, Resource Manager, Resource Groups, Locks. 
+**Platform:** Azure Cloud \
+**Services:** Azure Resource Manager, Azure Policy, Resource Groups \
+**Tools:** Azure Portal \
+**Access Level:** Reader 
 
 ## Investigation
-The core. Numbered steps IN YOUR OWN WORDS: what you looked at, what you found, what you concluded at each step. 
-6 to 12 screenshots of meaningful moments (portal views, query results, before/after).
 
-In stage 1, I began by signing into the Azure portal and navigating to the Resource Manager to begin searching for this "test environment" amongst the many resource groups shown. 
-To find the test environement as fast as possible I began with filtering the resource groups out by naming convention. 
-Starting with resource group where the name did not begin with -rg. I found the test environment as the only result of this filter.
+### Stage 1
+I signed into the Azure portal and navigated to Resource Manager to search for the "test environment" among the many resource groups shown. 
+To find the test environment as fast as possible, I began filtering the resource groups to see if the deployer had ignored prefix naming convention. 
+Starting with resource groups where the name did not begin with -rg. I quickly found the "test environment" as the only result. 
+
+
 <img width="645" height="331" alt="image" src="https://github.com/user-attachments/assets/47d7a6b8-2fdb-47a4-8d30-1d6413849449" />
 
-In stage 2, I continued the investigation by inspecting the resource group. Inside the resource group was a single resource that the intern had deployed.
-That resource contained tags such as the owner, cost center, environment, and a flag the intern was instructed to use.
+
+### Stage 2
+I continued on with my investigation by inspecting the testing environment resource group. 
+Inside this resource group was only a single resource that had been deployed.
+That resource contained useful tags such as the owner, cost center, environment, and a flag the deployer was instructed to use.
+
+
 <img width="1192" height="792" alt="image" src="https://github.com/user-attachments/assets/ebdb340d-8742-472a-b520-209ed5e371f0" />
+
+
 <img width="1717" height="445" alt="image" src="https://github.com/user-attachments/assets/317544b4-9852-42d9-a837-e70d266f1266" />
 
-In stage 3, I had to trace the deployment to find more information about the resource's creation. Navigating back to Resource Group Overview -> Settings -> Deployments.
-After looking through the details of this deployment and its naming, I can confirm who deployed this and when.
+### Stage 3
+To learn more about the creation of this resource I had to trace it's deployment. Navigating back to Resource Group Overview -> Settings -> Deployments.
+Under the deployment blade was only a single deployment result whose naming gave me the answer to who ran it and roughly when, which is the start of any incident timeline.
+
+
 <img width="1897" height="645" alt="image" src="https://github.com/user-attachments/assets/2045faa0-0dba-4473-95e8-d4139339318a" />
-<img width="1517" height="507" alt="image" src="https://github.com/user-attachments/assets/fb5531bc-1ed6-4163-b115-3adeadb80b6c" />
+
+
+<img width="1252" height="412" alt="image" src="https://github.com/user-attachments/assets/6e9ebe22-c61d-4972-b948-c4aa72f822ab" />
 
 
 
+### Stage 4
+The lingering question of this investigation was "Why didn't the policy in place prevent this?" To solve this question, I navigated to the policies section: Resource Group Overview -> Settings -> Policies. The naming convention policy flagged the resource as noncompliant, but the misnamed resource group was deployed. To understand why, I looked further into the details of the policy assignment by navigating to Authoring-> Assignments -> Naming Convention Assignment. 
+Under the assignment details, I found the parameters effect of this assignment to be set to audit, which only passively logs violations unlike deny which blocks them from being created. 
+
+
+<img width="1852" height="737" alt="image" src="https://github.com/user-attachments/assets/0c080eae-8c97-440f-b5ee-30857bed1fec" />
 
 
 
+<img width="1897" height="747" alt="image" src="https://github.com/user-attachments/assets/3c80350e-57c6-4639-bce8-e0a83e7cfbc7" />
 
 
 
 
 ## What broke / what surprised me
-The most credible section in the document. Dead ends, wrong guesses, the thing that took an hour. Employers know real work is messy. This section separates you from certificate collectors.
+I expected the platform policy to block any resource group that lacked proper naming prefix. However, discovering that the policy ran in audit mode explained why the portal permitted the operation without an outright error. 
 
 ## Findings and recommendations
-What you determined, plus 2 or 3 recommendations as if you were reporting to the resource owner.
+I determined that an intern had ignored the company's governance standards and deploy an unauthorized resource group in a live Azure subscription. In creating and deploying this noncompliant resource group, the company's naming convention policy failed to prevent the violation because of a technical misconfiguration in the policy's assignment parameters. My recommendations moving forward are to properly configure the policy assignment parameters from audit to deny across all active subscriptions and to implement required training for all new personel before granting any access/permissions to live platforms. 
 
 ## What I learned
-3 to 5 bullets. At least one technical, one "what I'd do differently."
+* Reader level access still permits full timeline reconstruction through resource deployment history.
+
+- An Azure Policy with an audit effect logs non compliance without preventing unauthorized deployments.
+
++ I need to document incident steps in real time during the investigation rather than writing the entire report from memory at the end.
+
+If I were to do anything differently, it would be to document as I go next time instead of after I have concluded my investigation.
