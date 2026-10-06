@@ -4,11 +4,11 @@ Documented cloud security investigations, built in a live Azure tenant
 (Mad Hat Labs, a multi-user training environment).
 
 Target role: SOC Analyst / Security Analyst
-Currently: [Machine Operator] | [Reading, PA / On-Site]
-Contact: [JacobBatista211@gmail.com] · [https://www.linkedin.com/in/jacob-batista-b646a5324]
+Currently: Machine Operator | Reading, PA / On-Site
+Contact: JacobBatista211@gmail.com · https://www.linkedin.com/in/jacob-batista-1206
 
 
-By [December 23rd,2026], I will be interview-ready for [SOC Analyst / Security Analyst] roles in [Reading, PA / remote], with documented investigations, a rebuilt resume, and 1,000+ applications submitted. I commit to [10] hours/week, one chapter/week, and daily check-ins.
+By December 23rd,2026, I will be interview-ready for SOC Analyst / Security Analyst roles in Reading, PA / remote, with documented investigations, a rebuilt resume, and 1,000+ applications submitted. I commit to [10] hours/week, one chapter/week, and daily check-ins.
 
 ## Investigations
 | # | Title | Focus | Write-up |
